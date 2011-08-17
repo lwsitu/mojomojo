@@ -65,7 +65,10 @@ and diffs it against the previous version.
 sub diff : Local {
     my ( $self, $c, $page, $revision, $against, $sparse ) = @_;
     unless ($revision) {
-        my $page = $c->model("DBIC::Page")->find($page);
+        my $page = $c->model("DBIC::Page")->find($page) or do {
+            $c->res->output($c->loc("Can't diff a nonexistent page"));
+            return 0;
+        };
         $revision = $page->content->id;
     }
     $revision = $c->model("DBIC::Content")->search(
@@ -117,9 +120,11 @@ sub tag : Local Args(1) {
         if (
             $tag
             && !$c->model("DBIC::Tag")->search(
-                page   => $page->id,
-                person => $c->req->{user_id},
-                tag    => $tagname
+                {
+                    page   => $page->id,
+                    person => $c->req->{user_id},
+                    tag    => $tagname,
+                }
             )->next()
             )
         {

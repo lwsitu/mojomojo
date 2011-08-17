@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 14;
+use Test::More;
 use lib 't/lib';
 use MojoMojoTestSchema;
 
@@ -71,3 +71,5 @@ is( scalar( @{$sender->deliveries} ), 1, 'regisration validation email sent' );
 ($mail) = $sender->deliveries->[0];
 like( $mail->{email}->get_header('to'), qr/^mojam/,        'right recipient' );
 like( $mail->{email}->get_body,         qr/validate your email address/i, 'email contains validate email address' );
+
+done_testing();
